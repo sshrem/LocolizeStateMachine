@@ -12,11 +12,11 @@ public class Machine<T,S> {
         this.stateDataUpdater = stateDataUpdater;
     }
 
-    public void init() throws IOException{
+    public void init() throws IOException, UnknownStateException {
         init(false);
     }
 
-    public void init(boolean shouldLoadState) throws IOException{
+    public void init(boolean shouldLoadState) throws IOException, UnknownStateException {
         if (shouldLoadState){
             this.state = stateFactory.loadFromFile();
         } else {
@@ -24,10 +24,13 @@ public class Machine<T,S> {
         }
     }
 
-    public State<T,S> processEvent(Event<S> event) throws UnknownEventException, IOException, UnknownStateException {
+    public State<T,S> processEvent(Event<S> event) throws UnknownEventException, UnknownStateException {
         state = state.processEvent(event, stateDataUpdater, stateFactory);
-        stateFactory.saveToFile(state);
         return state;
+    }
+
+    public void persist() throws IOException {
+        stateFactory.saveToFile(state);
     }
 
     public State<T,S> getState(){

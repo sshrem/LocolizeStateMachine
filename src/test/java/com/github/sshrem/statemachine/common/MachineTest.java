@@ -1,5 +1,6 @@
 package com.github.sshrem.statemachine.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.sshrem.statemachine.event.EventData;
 import com.github.sshrem.statemachine.event.FirstEvent;
 import com.github.sshrem.statemachine.event.SecondEvent;
@@ -25,14 +26,16 @@ public class MachineTest {
     final private String utf8 = StandardCharsets.UTF_8.name();
     private ByteArrayOutputStream baos;
     private PrintStream ps;
+    private StateFactoryInterface<StateData, EventData> stateFactory;
+    private StateDataUpdaterInterface<StateData, EventData> stateDataUpdater;
 
     @BeforeEach
-    public void beforeEach() throws IOException {
-        StateFactoryInterface<StateData, EventData> stateFactory = new StateFactory();
+    public void beforeEach() throws IOException, UnknownStateException {
+        stateFactory = new StateFactory();
 
         baos = new ByteArrayOutputStream();
         ps = new PrintStream(baos, true, utf8);
-        StateDataUpdaterInterface<StateData, EventData> stateDataUpdater = new StateDataUpdater(ps);
+        stateDataUpdater = new StateDataUpdater(ps);
 
         machine = new Machine<>(stateFactory, stateDataUpdater);
         machine.init();
@@ -177,20 +180,45 @@ public class MachineTest {
     }
 
     @Test
-    public void testUnknownEventException() throws UnknownStateException, UnknownEventException, IOException {
-        Event<EventData> event = new Event<EventData>("UnknownEvent", 3, null){};
+    public void testUnknownEventException() {
+        Event<EventData> event = new Event<>("UnknownEvent", 3, null){};
         Throwable exception = assertThrows(UnknownEventException.class, () -> machine.processEvent(event));
         assertEquals("UnknownEventException State InitState (ID: 0) doesn't know how to handle event UnknownEvent (ID: 3)", exception.getMessage());
     }
 
     @Test
-    public void testLoadState() {
-        assertTrue(true);
+    public void testLoadState() throws UnknownStateException, UnknownEventException, IOException {
+        StateFactoryInterface<StateData, EventData> stateFactory1 = new StateFactory("./persistent/state1.json", new ObjectMapper());
+        machine = new Machine<>(stateFactory1, stateDataUpdater);
+        machine.init();
+        FirstEvent event1 = new FirstEvent();
+        machine.processEvent(event1);
+        machine.persist();
+
+        Machine<StateData, EventData> newMachine = new Machine<>(stateFactory1, stateDataUpdater);
+        newMachine.init(true);
+
+        State<StateData, EventData> state = newMachine.getState();
+        StateData data = state.getData();
+        assertEquals(1, state.getId());
+        assertEquals(1, data.getEventId());
+        assertEquals(1, data.getEventCount());
     }
 
     @Test
-    public void testSaveState() {
-        assertTrue(true);
-    }
+    public void testLoadInitState() throws UnknownStateException, IOException {
+        StateFactoryInterface<StateData, EventData> stateFactory1 = new StateFactory("./persistent/state2.json", new ObjectMapper());
+        machine = new Machine<>(stateFactory1, stateDataUpdater);
+        machine.init();
+        machine.persist();
 
+        Machine<StateData, EventData> newMachine = new Machine<>(stateFactory1, stateDataUpdater);
+        newMachine.init(true);
+
+        State<StateData, EventData> state = newMachine.getState();
+        StateData data = state.getData();
+        assertEquals(0, state.getId());
+        assertEquals(0, data.getEventId());
+        assertEquals(0, data.getEventCount());
+    }
 }
