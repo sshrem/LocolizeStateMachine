@@ -16,8 +16,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class MachineTest {
@@ -175,6 +174,13 @@ public class MachineTest {
         assertEquals(1, data.getEventId());
         assertEquals(4, data.getEventCount());
         assertEquals("", baos.toString(utf8));
+    }
+
+    @Test
+    public void testUnknownEventException() throws UnknownStateException, UnknownEventException, IOException {
+        Event<EventData> event = new Event<EventData>("UnknownEvent", 3, null){};
+        Throwable exception = assertThrows(UnknownEventException.class, () -> machine.processEvent(event));
+        assertEquals("UnknownEventException State InitState (ID: 0) doesn't know how to handle event UnknownEvent (ID: 3)", exception.getMessage());
     }
 
     @Test

@@ -8,8 +8,9 @@ import java.io.PrintStream;
 
 public class StateDataUpdater implements StateDataUpdaterInterface<StateData, EventData> {
 
-    private PrintStream printStream = System.out;
+    private PrintStream printStream;
     public StateDataUpdater() {
+        this(System.out);
     }
 
     public StateDataUpdater(PrintStream  printStream){

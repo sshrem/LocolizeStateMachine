@@ -8,7 +8,16 @@ import com.github.sshrem.statemachine.common.UnknownStateException;
 import java.io.IOException;
 
 public class StateFactory implements StateFactoryInterface<StateData, EventData> {
-    private String defultPath = "./";
+    private static final String DEFAULT_PATH = "./";
+    private final String path;
+
+    public StateFactory(){
+        this(DEFAULT_PATH);
+    }
+
+    public StateFactory(String path){
+        this.path = path;
+    }
 
     @Override
     public State<StateData, EventData> createInitState() {
