@@ -1,23 +1,21 @@
 package com.github.sshrem.statemachine.common;
 
-public abstract class State {
+public abstract class State<T,S> {
 
     private String name;
     private int id;
-    private StateData data;
-    private StateDataUpdaterInterface stateDataUpdater;
-    
-    public State(String name, int id, StateData data, StateDataUpdaterInterface stateDataUpdater) {
+    private T data;
+
+    public State(String name, int id, T data) {
         this.name = name;
         this.id = id;
         this.data = data;
-        this.stateDataUpdater = stateDataUpdater;
     }
 
-    protected abstract State handleEvent(Event event) throws UnknownEventException;
+    protected abstract State<T,S> handleEvent(Event<S> event, StateFactoryInterface<T,S> stateFactory) throws UnknownEventException, UnknownStateException;
 
-    public State proccessEvent(Event event) throws UnknownEventException {
-        State newState = handleEvent(event);
+    public State<T,S> processEvent(Event<S> event, StateDataUpdaterInterface<T,S> stateDataUpdater, StateFactoryInterface<T,S> stateFactory) throws UnknownEventException, UnknownStateException {
+        State<T,S> newState = handleEvent(event, stateFactory);
         stateDataUpdater.update(this, newState, event);
 
         return newState;
@@ -31,11 +29,11 @@ public abstract class State {
         this.id = id;
     }
 
-    public StateData getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(StateData data) {
+    public void setData(T data) {
         this.data = data;
     }
 

@@ -1,4 +1,4 @@
-package com.github.sshrem.statemachine.common;
+package com.github.sshrem.statemachine.event;
 
 public class EventData {
     private int data;

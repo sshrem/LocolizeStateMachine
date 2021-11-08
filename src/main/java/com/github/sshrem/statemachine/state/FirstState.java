@@ -1,29 +1,23 @@
 package com.github.sshrem.statemachine.state;
 
-import com.github.sshrem.statemachine.common.Event;
-import com.github.sshrem.statemachine.common.State;
-import com.github.sshrem.statemachine.common.StateData;
-import com.github.sshrem.statemachine.common.UnknownEventException;
+import com.github.sshrem.statemachine.common.*;
+import com.github.sshrem.statemachine.event.EventData;
 
-public class FirstState extends State {
+public class FirstState extends State<StateData, EventData> {
+
     public FirstState(){
-        super("FirstState", 1, new StateData(), new StateDataUpdater());
+        this(new StateData());
     }
-
-    public FirstState(Event event){
-        super("FirstState", 1, new StateData(event), new StateDataUpdater());
+    public FirstState(StateData stateData){
+        super("FirstState", 1, stateData);
     }
-
 
     @Override
-    public State handleEvent(Event event) throws UnknownEventException {
-        switch(event.getId()){
-            case 1:
-                return this;
-            case 2:
-                return new SecondState(event);
-            default:
-                throw new UnknownEventException(this, event);
-        }
+    public State<StateData, EventData> handleEvent(Event<EventData> event, StateFactoryInterface<StateData, EventData> stateFactory) throws UnknownEventException, UnknownStateException {
+        return switch (event.getId()) {
+            case 1 -> this;
+            case 2 -> stateFactory.create(2, new StateData(event.getId(), 1));
+            default -> throw new UnknownEventException(this.getName(), this.getId(), event.getName(), event.getId());
+        };
     }
 }

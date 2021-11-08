@@ -1,44 +1,36 @@
 package com.github.sshrem.statemachine.common;
 
-import com.github.sshrem.statemachine.state.InitState;
+import java.io.IOException;
 
-public class Machine {
+public class Machine<T,S> {
+    private State<T,S> state;
+    private StateFactoryInterface<T,S> stateFactory;
+    private StateDataUpdaterInterface<T,S> stateDataUpdater;
 
-    private String defultPath = "./";
-    private State state;
-
-    public Machine(){
-        this(false, new InitState());
+    public Machine(StateFactoryInterface<T,S> stateFactory, StateDataUpdaterInterface<T,S> stateDataUpdater) {
+        this.stateFactory = stateFactory;
+        this.stateDataUpdater = stateDataUpdater;
     }
 
-    public Machine(State state){
-        this(false, state);
+    public void init() throws IOException{
+        init(false);
     }
 
-    public Machine(boolean shouldLoadState){
-        this(shouldLoadState, new InitState());
-    }
-
-    public Machine(boolean shouldLoadState, State state){
+    public void init(boolean shouldLoadState) throws IOException{
         if (shouldLoadState){
-            this.state = loadState(defultPath);
+            this.state = stateFactory.loadFromFile();
         } else {
-            this.state = state;
+            this.state = stateFactory.createInitState();
         }
     }
 
-
-
-    public State loadState(String path){
-        return null;
+    public State<T,S> processEvent(Event<S> event) throws UnknownEventException, IOException, UnknownStateException {
+        state = state.processEvent(event, stateDataUpdater, stateFactory);
+        stateFactory.saveToFile(state);
+        return state;
     }
 
-    public void saveState(String path){
-        
-    }
-
-    public void handleEvent(Event event) throws UnknownEventException{
-        state = state.handleEvent(event);
-        saveState(defultPath);
+    public State<T,S> getState(){
+        return state;
     }
 }

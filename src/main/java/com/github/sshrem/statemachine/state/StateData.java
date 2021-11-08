@@ -1,4 +1,6 @@
-package com.github.sshrem.statemachine.common;
+package com.github.sshrem.statemachine.state;
+
+import com.github.sshrem.statemachine.common.Event;
 
 public class StateData {
     private int eventId;
@@ -13,10 +15,6 @@ public class StateData {
         this.eventId = eventId;
     }
 
-    public StateData(Event event){
-        this(event.getId(), 0);
-    }
-    
     public int getEventCount() {
         return eventCount;
     }

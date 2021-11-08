@@ -1,5 +1,7 @@
 package com.github.sshrem.statemachine.common;
 
-public interface StateDataUpdaterInterface {
-    StateData update(State oldState, State newState, Event event);
+import com.github.sshrem.statemachine.state.StateData;
+
+public interface StateDataUpdaterInterface<T,S> {
+    StateData update(State<T,S> oldState, State<T,S> newState, Event<S> event);
 }
