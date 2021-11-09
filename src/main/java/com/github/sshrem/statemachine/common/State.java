@@ -1,6 +1,6 @@
 package com.github.sshrem.statemachine.common;
 
-public abstract class State<T,S> {
+public abstract class State<T, S> {
 
     private String name;
     private int id;
@@ -12,10 +12,10 @@ public abstract class State<T,S> {
         this.data = data;
     }
 
-    protected abstract State<T,S> handleEvent(Event<S> event, StateFactoryInterface<T,S> stateFactory) throws UnknownEventException, UnknownStateException;
+    protected abstract State<T, S> handleEvent(Event<S> event, StateFactoryBase<T, S> stateFactory) throws UnknownEventException, UnknownStateException;
 
-    public State<T,S> processEvent(Event<S> event, StateDataUpdaterInterface<T,S> stateDataUpdater, StateFactoryInterface<T,S> stateFactory) throws UnknownEventException, UnknownStateException {
-        State<T,S> newState = handleEvent(event, stateFactory);
+    public State<T, S> processEvent(Event<S> event, StateDataUpdaterInterface<T, S> stateDataUpdater, StateFactoryBase<T, S> stateFactory) throws UnknownEventException, UnknownStateException {
+        State<T, S> newState = handleEvent(event, stateFactory);
         stateDataUpdater.update(this, newState, event);
 
         return newState;

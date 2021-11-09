@@ -3,7 +3,7 @@ package com.github.sshrem.statemachine.event;
 public class EventData {
     private int data;
 
-    public EventData(){
+    public EventData() {
         this(0);
     }
 

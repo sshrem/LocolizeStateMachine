@@ -5,7 +5,7 @@ import com.github.sshrem.statemachine.event.EventData;
 
 public class InitState extends State<StateData, EventData> {
 
-    public InitState(){
+    public InitState() {
         this(new StateData());
     }
 
@@ -14,7 +14,7 @@ public class InitState extends State<StateData, EventData> {
     }
 
     @Override
-    public State<StateData, EventData>  handleEvent(Event<EventData> event, StateFactoryInterface<StateData, EventData> stateFactory) throws UnknownEventException, UnknownStateException {
+    public State<StateData, EventData> handleEvent(Event<EventData> event, StateFactoryBase<StateData, EventData> stateFactory) throws UnknownEventException, UnknownStateException {
         return switch (event.getId()) {
             case 1 -> stateFactory.create(1, new StateData(event.getId(), 1));
             case 2 -> stateFactory.create(2, new StateData(event.getId(), 1));

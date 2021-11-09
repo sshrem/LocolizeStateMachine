@@ -10,10 +10,11 @@ public abstract class Event<S> {
         this.id = id;
         this.data = data;
     }
-  
+
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -33,5 +34,5 @@ public abstract class Event<S> {
     public void setData(S data) {
         this.data = data;
     }
-    
+
 }

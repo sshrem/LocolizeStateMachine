@@ -2,12 +2,12 @@ package com.github.sshrem.statemachine.common;
 
 import java.io.IOException;
 
-public class Machine<T,S> {
-    private State<T,S> state;
-    private StateFactoryInterface<T,S> stateFactory;
-    private StateDataUpdaterInterface<T,S> stateDataUpdater;
+public class Machine<T, S> {
+    private State<T, S> state;
+    private final StateFactoryBase<T, S> stateFactory;
+    private final StateDataUpdaterInterface<T, S> stateDataUpdater;
 
-    public Machine(StateFactoryInterface<T,S> stateFactory, StateDataUpdaterInterface<T,S> stateDataUpdater) {
+    public Machine(StateFactoryBase<T, S> stateFactory, StateDataUpdaterInterface<T, S> stateDataUpdater) {
         this.stateFactory = stateFactory;
         this.stateDataUpdater = stateDataUpdater;
     }
@@ -17,14 +17,14 @@ public class Machine<T,S> {
     }
 
     public void init(boolean shouldLoadState) throws IOException, UnknownStateException {
-        if (shouldLoadState){
+        if (shouldLoadState) {
             this.state = stateFactory.loadFromFile();
         } else {
             this.state = stateFactory.createInitState();
         }
     }
 
-    public State<T,S> processEvent(Event<S> event) throws UnknownEventException, UnknownStateException {
+    public State<T, S> processEvent(Event<S> event) throws UnknownEventException, UnknownStateException {
         state = state.processEvent(event, stateDataUpdater, stateFactory);
         return state;
     }
@@ -33,7 +33,7 @@ public class Machine<T,S> {
         stateFactory.saveToFile(state);
     }
 
-    public State<T,S> getState(){
+    public State<T, S> getState() {
         return state;
     }
 }

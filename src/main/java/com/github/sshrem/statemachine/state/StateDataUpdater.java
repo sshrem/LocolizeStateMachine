@@ -1,19 +1,21 @@
 package com.github.sshrem.statemachine.state;
 
-import com.github.sshrem.statemachine.common.*;
+import com.github.sshrem.statemachine.common.Event;
+import com.github.sshrem.statemachine.common.State;
+import com.github.sshrem.statemachine.common.StateDataUpdaterInterface;
 import com.github.sshrem.statemachine.event.EventData;
 
-import java.io.OutputStream;
 import java.io.PrintStream;
 
 public class StateDataUpdater implements StateDataUpdaterInterface<StateData, EventData> {
 
-    private PrintStream printStream;
+    private final PrintStream printStream;
+
     public StateDataUpdater() {
         this(System.out);
     }
 
-    public StateDataUpdater(PrintStream  printStream){
+    public StateDataUpdater(PrintStream printStream) {
         this.printStream = printStream;
     }
 
@@ -22,7 +24,7 @@ public class StateDataUpdater implements StateDataUpdaterInterface<StateData, Ev
         StateData newData = newState.getData();
         StateData oldData = oldState.getData();
 
-        if (oldData.getEventId() == newData.getEventId()){
+        if (oldData.getEventId() == newData.getEventId()) {
             newData.setEventCount(oldData.getEventCount() + 1);
         } else {
             newData.setEventId(event.getId());

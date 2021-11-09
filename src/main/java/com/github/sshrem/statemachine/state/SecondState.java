@@ -9,12 +9,12 @@ public class SecondState extends State<StateData, EventData> {
         this(new StateData());
     }
 
-    public SecondState(StateData stateData){
+    public SecondState(StateData stateData) {
         super("SecondState", 2, stateData);
     }
 
     @Override
-    public State<StateData, EventData> handleEvent(Event<EventData> event, StateFactoryInterface<StateData, EventData> stateFactory) throws UnknownEventException, UnknownStateException {
+    public State<StateData, EventData> handleEvent(Event<EventData> event, StateFactoryBase<StateData, EventData> stateFactory) throws UnknownEventException, UnknownStateException {
         return switch (event.getId()) {
             case 1 -> stateFactory.create(1, new StateData(event.getId(), 1));
             case 2 -> this;

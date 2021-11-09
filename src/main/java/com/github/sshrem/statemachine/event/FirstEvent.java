@@ -11,5 +11,5 @@ public class FirstEvent extends Event<EventData> {
     public FirstEvent(EventData eventData) {
         super("FirstEvent", 1, eventData);
     }
-    
+
 }

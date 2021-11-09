@@ -1,6 +1,6 @@
 package com.github.sshrem.statemachine.common;
 
-public class UnknownStateException extends Exception{
+public class UnknownStateException extends Exception {
     public UnknownStateException() {
         super();
     }

@@ -17,16 +17,16 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class MachineTest {
-    private Machine<StateData, EventData> machine;
-
     final private String utf8 = StandardCharsets.UTF_8.name();
+    private Machine<StateData, EventData> machine;
     private ByteArrayOutputStream baos;
     private PrintStream ps;
-    private StateFactoryInterface<StateData, EventData> stateFactory;
+    private StateFactoryBase<StateData, EventData> stateFactory;
     private StateDataUpdaterInterface<StateData, EventData> stateDataUpdater;
 
     @BeforeEach
@@ -42,7 +42,7 @@ public class MachineTest {
     }
 
     @AfterEach
-    public void afterEach(){
+    public void afterEach() {
         ps.close();
     }
 
@@ -113,7 +113,7 @@ public class MachineTest {
     public void testHandleEvent2() throws UnknownStateException, UnknownEventException, IOException {
 
         SecondEvent event2 = new SecondEvent();
-        State<StateData, EventData>  state = machine.processEvent(event2);
+        State<StateData, EventData> state = machine.processEvent(event2);
         StateData data = state.getData();
         assertEquals(2, state.getId());
         assertEquals(2, data.getEventId());
@@ -181,14 +181,15 @@ public class MachineTest {
 
     @Test
     public void testUnknownEventException() {
-        Event<EventData> event = new Event<>("UnknownEvent", 3, null){};
+        Event<EventData> event = new Event<>("UnknownEvent", 3, null) {
+        };
         Throwable exception = assertThrows(UnknownEventException.class, () -> machine.processEvent(event));
         assertEquals("UnknownEventException State InitState (ID: 0) doesn't know how to handle event UnknownEvent (ID: 3)", exception.getMessage());
     }
 
     @Test
     public void testLoadState() throws UnknownStateException, UnknownEventException, IOException {
-        StateFactoryInterface<StateData, EventData> stateFactory1 = new StateFactory("./persistent/state1.json", new ObjectMapper());
+        StateFactoryBase<StateData, EventData> stateFactory1 = new StateFactory("./persistent/state1.json", new ObjectMapper());
         machine = new Machine<>(stateFactory1, stateDataUpdater);
         machine.init();
         FirstEvent event1 = new FirstEvent();
@@ -207,7 +208,7 @@ public class MachineTest {
 
     @Test
     public void testLoadInitState() throws UnknownStateException, IOException {
-        StateFactoryInterface<StateData, EventData> stateFactory1 = new StateFactory("./persistent/state2.json", new ObjectMapper());
+        StateFactoryBase<StateData, EventData> stateFactory1 = new StateFactory("./persistent/state2.json", new ObjectMapper());
         machine = new Machine<>(stateFactory1, stateDataUpdater);
         machine.init();
         machine.persist();
